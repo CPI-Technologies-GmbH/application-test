@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Models\Projects;
+use App\Models\User;
 
 class TheProjectTest extends TestCase
 {
@@ -37,10 +39,7 @@ class TheProjectTest extends TestCase
         $this->authCode = $response->json()['token'];
     }
 
-    /**
-     * Perform a login test.
-     */
-    public function test_update_project(): void
+    public function test_create_project(): void
     {
         // Create project + append auth code for login
         $response = $this->withHeaders([
@@ -51,4 +50,62 @@ class TheProjectTest extends TestCase
         ]);
         $response->assertStatus(201);
     }
+
+    // TODO: we can also check database in these tests
+
+    public function test_index_project(): void
+    {
+        // Index projects + append auth code for login
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->authCode,
+        ])->get('/projects', [
+            'name' => 'test',
+            'description' => 'test',
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_update_project(): void
+    {
+        $user = User::where('email', $this->email)->first();
+
+        // TODO: use factory
+        $project = Projects::create([
+            'name' => 'test',
+            'description' => 'test',
+            'user_id' => $user->id,
+        ]);
+
+        // Create project + append auth code for login
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->authCode,
+        ])->put("/projects/{$project->id}", [
+            'name' => 'test',
+            'description' => 'test',
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_delete_project(): void
+    {
+        $user = User::where('email', $this->email)->first();
+
+        // TODO: use factory
+        $project = Projects::create([
+            'name' => 'test',
+            'description' => 'test',
+            'user_id' => $user->id,
+        ]);
+
+        // Create project + append auth code for login
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->authCode,
+        ])->delete("/projects/{$project->id}", []);
+
+        $response->assertStatus(200);
+    }
+
+    // Write tests for checking the authorization
 }
