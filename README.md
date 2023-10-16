@@ -20,6 +20,7 @@ If you have any questions, please do not hesitate to contact us.
    so.
 6. Every Monday we want to send an email to all users that summarizes their time tracking
 7. Think about one more feature you would like to add to the application and implement it
+I think one of the most important features is adding admin API so the admins can see the time trackings.
 
 Rules:
 
@@ -27,6 +28,9 @@ Rules:
 - You can use any library you want, but you have to justify why you use it
 - Although code is now in Controller, this is not how we want to see it in production. Please refactor it, so that the
   code is in the right place
+   We can use the Repository patter for the ProjectsController and the TimeTrackingFollowingController but I'm afraid it doesn't make much different. By the way, we can move the authorizations to a form request.
+   But we can move the logics in AuthController to a service layer like AuthService.
+
 - When you are done, please create a pull request in the GitHub repository and invite us to review it. Make sure that
   you have your full name in your GitHub - if not, include it in the code or send it via mail reply to the last HR
   email.
