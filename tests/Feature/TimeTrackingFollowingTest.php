@@ -5,9 +5,10 @@ namespace Tests\Feature;
 // use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Projects;
+use App\Models\TimeTrackingFollowing;
 use App\Models\User;
 
-class TheProjectTest extends TestCase
+class TimeTrackingFollowingTest extends TestCase
 {
     protected $email;
     protected $password = 'password';
@@ -18,6 +19,8 @@ class TheProjectTest extends TestCase
         parent::setUp();
         $this->create_user_account();
     }
+
+    // TODO: we can also check database in these tests
 
     public function create_user_account(): void {
         $this->email = 'user' . rand(0, 10000) . '+' . time() . '@nice.local';
@@ -39,34 +42,31 @@ class TheProjectTest extends TestCase
         $this->authCode = $response->json()['token'];
     }
 
-    public function test_create_project(): void
+    /**
+     * test starting time tracking following record.
+     */
+    public function test_start_time_tracking_following(): void
     {
-        // Create project + append auth code for login
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->authCode,
-        ])->post('/projects', [
+        $user = User::where('email', $this->email)->first();
+
+        $project = Projects::create([
             'name' => 'test',
             'description' => 'test',
+            'user_id' => $user->id,
         ]);
+
+        // Create time tracking following + append auth code for login
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->authCode,
+        ])->post("/projects/{$project->id}/time-tracking-followings/start", []);
+
         $response->assertStatus(201);
     }
 
-    // TODO: we can also check database in these tests
-
-    public function test_index_project(): void
-    {
-        // Index projects + append auth code for login
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->authCode,
-        ])->get('/projects', [
-            'name' => 'test',
-            'description' => 'test',
-        ]);
-
-        $response->assertStatus(200);
-    }
-
-    public function test_update_project(): void
+    /**
+     * test ending time tracking following record.
+     */
+    public function test_end_time_tracking_following(): void
     {
         $user = User::where('email', $this->email)->first();
 
@@ -77,18 +77,24 @@ class TheProjectTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        // Create project + append auth code for login
+        // TODO: use factory
+        $timeTrackingFollowing = TimeTrackingFollowing::create([
+            'project_id' => $project->getKey(),
+            'start_time' => now(),
+        ]);
+
+        // Create time tracking following + append auth code for login
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->authCode,
-        ])->put("/projects/{$project->id}", [
-            'name' => 'test',
-            'description' => 'test',
-        ]);
+        ])->post("/projects/{$project->id}/time-tracking-followings/{$timeTrackingFollowing->id}/end", []);
 
         $response->assertStatus(200);
     }
 
-    public function test_delete_project(): void
+    /**
+     * test ending time tracking following record for a different project.
+     */
+    public function test_end_time_tracking_following_for_different_project(): void
     {
         $user = User::where('email', $this->email)->first();
 
@@ -99,13 +105,23 @@ class TheProjectTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        // Create project + append auth code for login
+        $projects = Projects::create([
+            'name' => 'test',
+            'description' => 'test',
+            'user_id' => $user->id,
+        ]);
+
+        // TODO: use factory
+        $timeTrackingFollowing = TimeTrackingFollowing::create([
+            'project_id' => $projects->getKey(),
+            'start_time' => now(),
+        ]);
+
+        // Create time tracking following + append auth code for login
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->authCode,
-        ])->delete("/projects/{$project->id}", []);
+        ])->post("/projects/{$project->id}/time-tracking-followings/{$timeTrackingFollowing->id}/end", []);
 
-        $response->assertStatus(200);
+        $response->assertStatus(404);
     }
-
-    // Write tests for checking the authorization
 }

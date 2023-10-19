@@ -26,5 +26,9 @@ Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout']);
-    Route::post('/projects', [App\Http\Controllers\ProjectController::class, 'create']);
+    Route::apiResource('/projects', App\Http\Controllers\ProjectController::class);
+
+    Route::post('/projects/{project}/time-tracking-followings/start', [App\Http\Controllers\TimeTrackingFollowingController::class, 'start']);
+    Route::post('/projects/{project}/time-tracking-followings/{timeTrackingFollowing}/end', [App\Http\Controllers\TimeTrackingFollowingController::class, 'end'])
+        ->scopeBindings();
 });
