@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
+
+use App\Models\Projects;
 use Tests\TestCase;
 
 class TheProjectTest extends TestCase
@@ -15,9 +17,11 @@ class TheProjectTest extends TestCase
     protected function setUp(): void {
         parent::setUp();
         $this->create_user_account();
+        $this->create_one_project();
     }
 
-    public function create_user_account(): void {
+    public function create_user_account(): void
+    {
         $this->email = 'user' . rand(0, 10000) . '+' . time() . '@nice.local';
 
         $response = $this->post('/register', [
@@ -37,6 +41,14 @@ class TheProjectTest extends TestCase
         $this->authCode = $response->json()['token'];
     }
 
+    public function create_one_project(): void
+    {
+        Projects::create([
+            'name' => 'a1',
+            'description' => 'a1',
+        ]);
+    }
+
     /**
      * Perform a login test.
      */
@@ -50,5 +62,16 @@ class TheProjectTest extends TestCase
             'description' => 'test',
         ]);
         $response->assertStatus(201);
+    }
+
+    public function test_get_project(): void
+    {
+        //
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->authCode,
+        ])->get('/projects/1');
+        $response->assertStatus(200);
+        $dataInResponse = $response->data;
+        $this->assertEquals('a1', $dataInResponse['name']);
     }
 }
