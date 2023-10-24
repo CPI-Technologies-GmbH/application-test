@@ -33,9 +33,6 @@ class WeeklyReportsJob implements ShouldQueue
         $startTime = Carbon::now()->subDays(7)->startOfDay();
 
         User::query()
-//           ->whereHas('timeTrackings', function (Builder $query) use ($endTime, $startTime) {
-//           $query->whereBetween('start_time', [$startTime, $endTime])->whereNotNull('end_time');
-//       })
             ->leftJoin('time_trackings', 'users.id', 'time_trackings.user_id')
             ->whereBetween('time_trackings.start_time', [$startTime, $endTime])
             ->whereNotNull('time_trackings.end_time')
