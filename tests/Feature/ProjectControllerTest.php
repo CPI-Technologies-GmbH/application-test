@@ -53,6 +53,12 @@ class ProjectControllerTest extends TestCase
         $this->authCode = $response->json()['token'];
     }
 
+    public function testProjectIndex(): void
+    {
+        $response = $this->getJson(route('projects.index'));
+        $response->assertOk();
+    }
+
     public function testCreateProject(): void
     {
         $response = $this->postJson(route('projects.create'), [

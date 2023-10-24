@@ -1,5 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\Project\CreateProjectController;
+use App\Http\Controllers\Api\Project\IndexProjectController;
+use App\Http\Controllers\Api\Project\RemoveProjectController;
+use App\Http\Controllers\Api\Project\ShowProjectController;
+use App\Http\Controllers\Api\Project\UpdateProjectController;
+use App\Http\Controllers\Api\TimeTracking\StartTimeTrackingController;
+use App\Http\Controllers\Api\TimeTracking\StopTimeTrackingController;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,28 +35,32 @@ Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout']);
 
+    Route::name('projects.time_tracking.')->prefix('/projects')->group(function () {
+        Route::post('/{project}/start', StartTimeTrackingController::class)
+            ->name('start');
+        Route::post('/{project}/stop', StopTimeTrackingController::class)
+            ->name('stop');
+    });
+
     Route::name('projects.')->group(function () {
-        Route::get('/projects', [App\Http\Controllers\ProjectController::class, 'index'])->name('index');
+        Route::get('/projects', IndexProjectController::class)
+            ->name('index');
 
-        Route::post('/projects', [App\Http\Controllers\ProjectController::class, 'create'])->can(
-            'create',
-            Project::class
-        )->name('create');
+        Route::post('/projects', CreateProjectController::class)
+            ->can('create', Project::class)
+            ->name('create');
 
-        Route::put('/projects/{project}', [App\Http\Controllers\ProjectController::class, 'update'])
-            ->can(
-                'update',
-                'project'
-            )
+        Route::put('/projects/{project}', UpdateProjectController::class)
+            ->can('update', 'project')
             ->name('update');
 
-        Route::get('/projects/{project}', [App\Http\Controllers\ProjectController::class, 'show'])->name('show')->can(
-            'view',
-            'project'
-        )->name('show');
-        Route::delete('/projects/{project}', [App\Http\Controllers\ProjectController::class, 'remove'])->can(
-            'delete',
-            'project'
-        )->name('delete');
+        Route::get('/projects/{project}', ShowProjectController::class)
+            ->name('show')
+            ->can('view', 'project')
+            ->name('show');
+
+        Route::delete('/projects/{project}', RemoveProjectController::class)
+            ->can('delete', 'project')
+            ->name('delete');
     });
 });
