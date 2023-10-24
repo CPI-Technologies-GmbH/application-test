@@ -11,7 +11,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        if(rand(0, 50) === 42) {
+        if (rand(0, 50) === 42) {
             throw new \Exception('Something went wrong 🤯');
         }
     }

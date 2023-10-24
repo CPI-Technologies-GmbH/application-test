@@ -12,20 +12,20 @@ class LoginTest extends TestCase
      */
     public function test_do_register_and_then_login(): void
     {
-        $email = 'user+' . time() . '@nice.local';
-        $password = 'password' . (rand(0, 3) == 0 ? '1' : '0');
+        $email = 'user+'.time().'@nice.local';
+        $password = 'password'.(rand(0, 3) == 0 ? '1' : '0');
 
         $response = $this->post('/register', [
             'name' => 'test',
             'email' => $email,
             'password' => $password,
-            'password_confirmation' => 'password0',
+            'password_confirmation' => $password,
         ]);
 
         $response->assertStatus(200);
 
         // Do login
-        $response = $this->post('/login', [
+        $response = $this->postJson('/login', [
             'email' => $email,
             'password' => $password,
         ]);

@@ -18,3 +18,5 @@ yarn-error.log
 /.idea
 /.vscode
 cheatsheet.md.ignore
+_ide_helper.php
+storage/nginx-logs/
