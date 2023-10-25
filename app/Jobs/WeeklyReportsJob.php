@@ -7,7 +7,6 @@ use App\Notifications\WeeklyTimeReportNotification;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -36,7 +35,8 @@ class WeeklyReportsJob implements ShouldQueue
             ->leftJoin('time_trackings', 'users.id', 'time_trackings.user_id')
             ->whereBetween('time_trackings.start_time', [$startTime, $endTime])
             ->whereNotNull('time_trackings.end_time')
-            ->selectRaw('users.*, TIMEDIFF(time_trackings.end_time , time_trackings.start_time) AS totalTimeInCurrentWeek')
+            ->selectRaw('users.id, users.email, SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(time_trackings.end_time , time_trackings.start_time)))) AS totalTimeInCurrentWeek')
+            ->groupBy('users.id')
             ->get()->each(function (User $user) {
                 $user->notify(new WeeklyTimeReportNotification($user->totalTimeInCurrentWeek));
             });
