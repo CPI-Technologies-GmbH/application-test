@@ -21,10 +21,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/', function() {
     return 'Hello World!';
 });
+
 Route::post('/register', [App\Http\Controllers\AuthController::class, 'register']);
 Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout']);
-    Route::post('/projects', [App\Http\Controllers\ProjectController::class, 'create']);
+    // Projects
+    Route::resource('/projects', App\Http\Controllers\ProjectController::class)->except(['create', 'edit']);
+    // Time track
+    Route::prefix('timetrack')->group(function () {
+        Route::post('/start', [App\Http\Controllers\TimetrackController::class, 'start']);
+        Route::post('/stop', [App\Http\Controllers\TimetrackController::class, 'stop']);
+    });
 });

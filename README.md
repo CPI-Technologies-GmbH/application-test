@@ -1,3 +1,12 @@
+# APPLICATION TEST DESCRIPTION
+1. Tests are using separate DB. Please, create it with `example_app_test` name and run `php artisan migrate --env=testing`
+or revert back changes in `phpunit.xml` to use existent DB. 
+2. To check application work with HTTP requests run `php artisan migrate:fresh --seed`
+3. Send e-mail command: I assume that it will be started by cron and will prepare statistic for last week.
+Also assume then we have reasonable amount of users and projects to do not use chuck.
+4. Tests: to save time I did check only about success
+5. To save time: implemented not complex error handling
+
 # WELCOME TO THE CPI APPLICATION TEST
 
 We are glad that you are interested in working with us. To get to know you better, we would like to give you a small
