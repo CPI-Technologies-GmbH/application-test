@@ -27,4 +27,15 @@ Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout']);
     Route::post('/projects', [App\Http\Controllers\ProjectController::class, 'create']);
+    Route::get('/projectsshow/{id}', [App\Http\Controllers\ProjectController::class, 'show']);
+    Route::post('/projectsupdate/{id}', [App\Http\Controllers\ProjectController::class, 'update']);
+    Route::delete('/projectsdestroy/{id}', [App\Http\Controllers\ProjectController::class, 'destroy']);
+    Route::get('/projectsindex', [App\Http\Controllers\ProjectController::class, 'index']);
+    Route::get('/timetrackingsindex', [App\Http\Controllers\TimeTrackingController::class, 'index']);
+    Route::post('/timetrackingsstore', [App\Http\Controllers\TimeTrackingController::class, 'store']);
+    Route::get('/timetrackingsshow/{id}', [App\Http\Controllers\TimeTrackingController::class, 'show']);
+    Route::post('/timetrackingsupdate/{id}', [App\Http\Controllers\TimeTrackingController::class, 'update']);
+    Route::delete('/timetrackingsdestroy/{id}', [App\Http\Controllers\TimeTrackingController::class, 'destroy']);
+    Route::post('/timetrackingsstart/{id}', [App\Http\Controllers\TimeTrackingController::class, 'startTracking']);
+    Route::post('/timetrackingsstop/{id}', [App\Http\Controllers\TimeTrackingController::class, 'stopTracking']);   
 });
