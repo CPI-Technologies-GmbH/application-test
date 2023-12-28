@@ -19,7 +19,8 @@ class LoginTest extends TestCase
             'name' => 'test',
             'email' => $email,
             'password' => $password,
-            'password_confirmation' => 'password0',
+            //'password_confirmation' => 'password0', looks like a mistake
+            'password_confirmation' => $password,
         ]);
 
         $response->assertStatus(200);
